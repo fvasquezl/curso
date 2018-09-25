@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Profession;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -43,7 +44,7 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        return $this->email === 'admin@local.com';
+        return $this->isAdmin();
     }
 
 }
