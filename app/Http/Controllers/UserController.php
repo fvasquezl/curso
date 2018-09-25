@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -30,8 +31,8 @@ class UserController extends Controller
     {
         $this->validate($request,[
             'name' => 'required',
-            'email' => 'required',
-            'password' => 'required'
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6'
             ]);
 
         User::create([
@@ -41,5 +42,29 @@ class UserController extends Controller
         ]);
 
         return redirect()->route('users.index');
+    }
+
+    public function edit(User $user)
+    {
+        return view('users.edit', compact('user'));
+    }
+
+    public function update(User $user,Request $request)
+    {
+        $this->validate($request,[
+        'name' => 'required',
+        'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
+        'password' => ''
+        ]);
+
+        if($request['password'] !=null){
+           $request['password'] = bcrypt($request['password']);
+        }else {
+            unset($request['password']);
+        }
+
+        $user->update($request->all());
+
+        return redirect()->route('users.show',$user);
     }
 }

@@ -3,48 +3,40 @@
 
 @section('content')
 
-    <h1>Crear usuario</h1>
+    <h1>Editar usuario</h1>
 
     @if($errors->any())
         <div class="alert alert-danger">
             <p>Por favor corrige los siguientes errores</p>
-        {{--<ul>--}}
-            {{--@foreach($errors->all() as $error)--}}
-                {{--<li>{{$error}}</li>--}}
-            {{--@endforeach--}}
-        {{--</ul>--}}
+            <ul>
+                @foreach($errors->all() as $error)
+                    <li>{{$error}}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    <form action="{{route('users.store')}}" method="POST">
+    <form action="{{route('users.update',$user)}}" method="POST">
+        {{method_field('PUT')}}
         @csrf
         <label for="name">Nombre</label>
         <input type="text"
                name="name"
                id="name"
-               value="{{old('nombre')}}"
+               value="{{old('nombre',$user->name)}}"
                placeholder="Tu nombre">
-        @if($errors->has('name'))
-            <p>{{$errors->first('name')}}</p>
-        @endif
         <label for="name">Email</label>
         <input type="email"
                name="email"
-               value="{{old('email')}}"
+               value="{{old('email',$user->email)}}"
                id="email"
                placeholder="Tu Email">
-        @if($errors->has('email'))
-            <p>{{$errors->first('email')}}</p>
-        @endif
         <label for="name">Password</label>
         <input type="password"
                name="password"
                id="password"
                placeholder="Mayor a 6 caracteres">
-        @if($errors->has('password'))
-            <p>{{$errors->first('password')}}</p>
-        @endif
-        <button type="submit">Crear usuario</button>
+        <button type="submit">Actualizar usuario</button>
     </form>
     <p>
         <a href="{{route('users.index')}}">Regresar al listado de usuarios</a>
