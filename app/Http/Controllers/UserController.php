@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateUserRequest;
 use App\User;
+use App\UserProfile;
+use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -27,20 +30,9 @@ class UserController extends Controller
        return view('users.create');
     }
 
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
-        $this->validate($request,[
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6'
-            ]);
-
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
+        $request->createUser();
         return redirect()->route('users.index');
     }
 
@@ -54,7 +46,7 @@ class UserController extends Controller
         $this->validate($request,[
         'name' => 'required',
         'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
-        'password' => ''
+        'password' => '',
         ]);
 
         if($request['password'] !=null){
