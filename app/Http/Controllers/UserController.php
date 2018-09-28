@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
+use App\Models\Profession;
 use App\User;
 use App\UserProfile;
 use function foo\func;
@@ -27,7 +28,8 @@ class UserController extends Controller
 
     public function create()
     {
-       return view('users.create');
+        $professions = Profession::orderBy('title','ASC')->get();
+       return view('users.create', compact('professions'));
     }
 
     public function store(CreateUserRequest $request)

@@ -25,7 +25,7 @@
                            name="name"
                            id="name"
                            class="form-control"
-                           value="{{old('nombre')}}"
+                           value="{{old('name')}}"
                            placeholder="Tu nombre">
                 </div>
                 <div class="form-group">
@@ -48,6 +48,17 @@
                 <div class="form-group">
                     <label for="bio">Bio</label>
                     <textarea name="bio" id="bio" class="form-control">{{old('bio')}}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profession_id">Profession</label>
+                    <select name="profession_id" id="profession_id" class="form-control">
+                        <option value="">Selecciona una profesion</option>
+                        @foreach($professions as $profession)
+                            <option value="{{$profession->id}}"{{old('profession_id') == $profession->id ? ' selected':''}}>
+                                {{$profession->title}}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="name">Twitter</label>
