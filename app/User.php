@@ -3,9 +3,10 @@
 namespace App;
 
 use App\Models\Profession;
+use App\Models\Skill;
+use App\Models\UserProfile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -51,6 +52,11 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(UserProfile::class);
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class,'user_skill');
     }
 
 }

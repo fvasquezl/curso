@@ -36,7 +36,11 @@ class CreateUserRequest extends FormRequest
                 'nullable','present',
                 Rule::exists('professions','id')
                 ->whereNull('deleted_at')
-                ]
+                ],
+            'skills' => [
+                'array',
+                Rule::exists('skills','id'),
+            ]
         ];
     }
 
@@ -54,6 +58,9 @@ class CreateUserRequest extends FormRequest
                 'twitter' => $this->twitter,
                 'profession_id' => $this->profession_id
             ]);
+
+            $user->skills()->attach($this->skills);
+
         });
     }
 }

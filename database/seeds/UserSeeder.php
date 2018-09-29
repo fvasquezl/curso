@@ -20,7 +20,6 @@ class UserSeeder extends Seeder
            'name'=> 'Faustino Vasquez',
            'email'=> 'fvasquez@local.com',
            'password'=> bcrypt('secret'),
-           'profession_id' => $professionId,
         ]);
 
         $user->profile()->create([
