@@ -15,22 +15,20 @@ class UserController extends Controller
     {
         $users = User::all();
 
-       $title = "Listado de usuarios";
-        return view('users.index', compact('users','title'));
+        $title = "Listado de usuarios";
+        return view('users.index', compact('users', 'title'));
     }
 
     public function show(User $user)
     {
-        return view('users.show',compact('user'));
+        return view('users.show', compact('user'));
     }
 
     public function create()
     {
-        $professions = Profession::orderBy('title','ASC')->get();
-        $skills = Skill::orderBy('name', 'ASC')->get();
-        $roles = trans('users.roles');
+        $user = new User;
 
-       return view('users.create', compact('professions','skills','roles'));
+        return view('users.create', compact('user'));
     }
 
     public function store(CreateUserRequest $request)
@@ -44,23 +42,23 @@ class UserController extends Controller
         return view('users.edit', compact('user'));
     }
 
-    public function update(User $user,Request $request)
+    public function update(User $user, Request $request)
     {
-        $this->validate($request,[
-        'name' => 'required',
-        'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
-        'password' => '',
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'password' => '',
         ]);
 
-        if($request['password'] !=null){
-           $request['password'] = bcrypt($request['password']);
-        }else {
+        if ($request['password'] != null) {
+            $request['password'] = bcrypt($request['password']);
+        } else {
             unset($request['password']);
         }
 
         $user->update($request->all());
 
-        return redirect()->route('users.show',$user);
+        return redirect()->route('users.show', $user);
     }
 
     public function destroy(User $user)
