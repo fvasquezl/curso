@@ -31,7 +31,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'is_admin' => 'boolean'
+        //
     ];
 
     public static function findByEmail($email)
@@ -57,6 +57,11 @@ class User extends Authenticatable
     public function skills()
     {
         return $this->belongsToMany(Skill::class,'user_skill');
+    }
+
+    public function isAdmim()
+    {
+        return $this->role === 'admin';
     }
 
 }
