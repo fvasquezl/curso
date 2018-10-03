@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Forms\UserForm;
 use App\Http\Requests\CreateUserRequest;
-use App\Models\Profession;
-use App\Models\Skill;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -26,9 +25,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $user = new User;
-
-        return view('users.create', compact('user'));
+        return new UserForm('users.create',new User);
     }
 
     public function store(CreateUserRequest $request)
@@ -39,7 +36,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        return new UserForm('users.edit',$user);
     }
 
     public function update(User $user, Request $request)
@@ -48,6 +45,10 @@ class UserController extends Controller
             'name' => 'required',
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => '',
+            'role' =>'',
+            'bio' =>'',
+            'profession_id' =>'',
+            'twitter' =>'',
         ]);
 
         if ($request['password'] != null) {
@@ -56,7 +57,11 @@ class UserController extends Controller
             unset($request['password']);
         }
 
-        $user->update($request->all());
+        $user->fill($request->all());
+        $user->role = $request->role;
+        $user->save();
+
+        $user->profile->update($request->all());
 
         return redirect()->route('users.show', $user);
     }
