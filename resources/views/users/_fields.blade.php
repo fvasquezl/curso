@@ -34,7 +34,7 @@
     <select name="profession_id" id="profession_id" class="form-control">
         <option value="">Selecciona una profesion</option>
         @foreach($professions as $profession)
-            <option value="{{$profession->id}}"{{old('profession_id',$user->profile->profession) == $profession->id ? ' selected':''}}>
+            <option value="{{$profession->id}}"{{old('profession_id',$user->profile->profession_id) == $profession->id ? ' selected':''}}>
                 {{$profession->title}}
             </option>
         @endforeach

@@ -62,7 +62,7 @@ class UpdateUsersTest extends TestCase
             'twitter' => 'https://twitter.com/fvasquezl',
             'role' => 'admin',
             'profession_id' => $newProfession->id,
-            'skills' => [$newSkill1->id, $newSkill2]
+            'skills' => [$newSkill1->id, $newSkill2->id]
         ])->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
@@ -79,7 +79,7 @@ class UpdateUsersTest extends TestCase
             'profession_id' => $newProfession->id,
         ]);
 
-        $this->assertDatabaseCount('user_skill');
+        $this->assertDatabaseCount('user_skill',2);
         $this->assertDatabaseHas('user_skill', [
             'user_id' => $user->id,
             'skill_id' => $newSkill1->id
@@ -88,6 +88,23 @@ class UpdateUsersTest extends TestCase
             'user_id' => $user->id,
             'skill_id' => $newSkill2->id
         ]);
+    }
+
+    /** @test * */
+    public function it_detaches_the_skills_if_none_is_checked()
+    {
+        $user = factory(User::class)->create();
+
+        $oldSkill1 = factory(Skill::class)->create();
+        $oldSkill2 = factory(Skill::class)->create();
+        $user->skills()->attach([$oldSkill1->id, $oldSkill2->id]);
+
+
+        $this->put(route('users.update', $user), $this->withData())
+            ->assertRedirect(route('users.show', $user));
+
+        $this->assertDatabaseEmpty('user_skill');
+
     }
 
     /** @test * */
@@ -139,11 +156,9 @@ class UpdateUsersTest extends TestCase
             'email' => 'fvasquez@local.com'
         ]);
         $this->from(route('users.edit', $user))
-            ->put(route('users.update', $user), [
-                'name' => 'Faustino Vasquez',
-                'email' => 'the-email',
-                'password' => 'secret'
-            ])->assertRedirect(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'email' =>'the-email-must-be-valid'
+            ]))->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['email']);
         $this->assertDatabaseHas('users', [
             'email' => 'fvasquez@local.com'
@@ -162,11 +177,9 @@ class UpdateUsersTest extends TestCase
             'email' => 'other@local.com'
         ]);
         $this->from(route('users.edit', $user))
-            ->put(route('users.update', $user), [
-                'name' => 'Faustino Vasquez',
+            ->put(route('users.update', $user),$this->withData([
                 'email' => 'fvasquez@local.com',
-                'password' => 'secret'
-            ])->assertRedirect(route('users.edit', $user))
+            ]))->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['email']);
         $this->assertDatabaseHas('users', [
             'email' => 'other@local.com'
@@ -180,11 +193,9 @@ class UpdateUsersTest extends TestCase
             'password' => bcrypt('123456')
         ]);
         $this->from(route('users.edit', $user))
-            ->put(route('users.update', $user), [
-                'name' => 'Faustino Vasquez',
-                'email' => 'fvasquez@local.com',
-                'password' => ''
-            ])->assertRedirect(route('users.show', $user));
+            ->put(route('users.update', $user), $this->withData([
+                'password' => '',
+            ]))->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
             'name' => 'Faustino Vasquez',
@@ -201,11 +212,9 @@ class UpdateUsersTest extends TestCase
             'email' => 'fvasquez@local.com'
         ]);
         $this->from(route('users.edit', $user))
-            ->put(route('users.update', $user), [
-                'name' => 'Faustino Vasquez',
+            ->put(route('users.update', $user), $this->withData([
                 'email' => 'fvasquez@local.com',
-                'password' => '123456'
-            ])->assertRedirect(route('users.show', $user));
+            ]))->assertRedirect(route('users.show', $user));
 
         $this->assertDatabaseHas('users', [
             'name' => 'Faustino Vasquez',
@@ -221,11 +230,9 @@ class UpdateUsersTest extends TestCase
             'email' => 'fvasquez@local.com'
         ]);
         $this->from(route('users.edit', $user))
-            ->put(route('users.update', $user), [
-                'name' => 'Faustino Vasquez',
-                'email' => 'fvasquez@local.com',
+            ->put(route('users.update', $user), $this->withData([
                 'password' => '123456'
-            ])->assertRedirect(route('users.show', $user));
+            ]))->assertRedirect(route('users.show', $user));
         $this->assertDatabaseHas('users', [
             'email' => 'fvasquez@local.com'
         ]);
