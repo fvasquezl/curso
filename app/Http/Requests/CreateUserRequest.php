@@ -31,9 +31,9 @@ class CreateUserRequest extends FormRequest
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+            'role' => ['nullable', Rule::in(Role::getList())],
             'bio' => 'required',
             'twitter' => ['nullable','present','url'],
-            'role' => ['nullable', Rule::in(Role::getList())],
             'profession_id' => [
                 'nullable','present',
                 Rule::exists('professions','id')

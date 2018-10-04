@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Forms\UserForm;
 use App\Http\Requests\CreateUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\User;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -39,33 +38,9 @@ class UserController extends Controller
         return new UserForm('users.edit', $user);
     }
 
-    public function update(User $user, Request $request)
+    public function update(User $user, UpdateUserRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => '',
-            'role' => '',
-            'bio' => '',
-            'profession_id' => '',
-            'twitter' => '',
-            'skills' => ''
-        ]);
-
-
-        if ($request['password'] != null) {
-            $request['password'] = bcrypt($request['password']);
-        } else {
-            unset($request['password']);
-        }
-
-        $user->fill($request->all());
-        $user->role = $request->role;
-        $user->save();
-
-        $user->profile->update($request->all());
-
-        $user->skills()->sync($request->skills);
+        $request->updateUser($user);
 
         return redirect()->route('users.show', $user);
     }

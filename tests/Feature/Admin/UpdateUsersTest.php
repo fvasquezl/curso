@@ -108,28 +108,26 @@ class UpdateUsersTest extends TestCase
     }
 
     /** @test * */
-    public function the_name_is_required_when_updating_a_user()
+    public function the_name_field_is_required()
     {
         $this->handleValidationExceptions();
 
-        $user = factory(User::class)->create([
-            'name' => 'Faustino Vasquez'
-        ]);
+        $user = factory(User::class)->create();
+
         $this->from(route('users.edit', $user))
-            ->put(route('users.update', $user), [
+            ->put(route('users.update', $user), $this->withData([
                 'name' => '',
-                'email' => 'fvasquez@local.com',
-                'password' => 'secret'
-            ])->assertRedirect(route('users.edit', $user))
+            ]))->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['name']);
-        $this->assertDatabaseHas('users', [
-            'name' => 'Faustino Vasquez'
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'fvasquez@local.com'
         ]);
     }
 
 
     /** @test * */
-    public function the_email_is_required()
+    public function the_email_field_is_required()
     {
         $this->handleValidationExceptions();
         $user = factory(User::class)->create([
@@ -148,7 +146,7 @@ class UpdateUsersTest extends TestCase
     }
 
     /** @test * */
-    public function the_email_must_be_valid()
+    public function the_email_field_must_be_valid()
     {
         $this->handleValidationExceptions();
 
@@ -166,7 +164,7 @@ class UpdateUsersTest extends TestCase
     }
 
     /** @test * */
-    public function the_email_must_be_unique()
+    public function the_email_field_must_be_unique()
     {
         $this->handleValidationExceptions();
 
@@ -187,7 +185,7 @@ class UpdateUsersTest extends TestCase
     }
 
     /** @test * */
-    public function the_password_is_optional()
+    public function the_password_field_is_optional()
     {
         $user = factory(User::class)->create([
             'password' => bcrypt('123456')
@@ -223,7 +221,7 @@ class UpdateUsersTest extends TestCase
     }
 
     /** @test * */
-    public function the_password_must_have_at_least_6_characters()
+    public function the_password_field_must_have_at_least_6_characters()
     {
 
         $user = factory(User::class)->create([
@@ -236,5 +234,48 @@ class UpdateUsersTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'fvasquez@local.com'
         ]);
+    }
+
+    /** @test * */
+    public function the_role_field_is_required()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'role' => '',
+            ]))->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['role']);
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'fvasquez@local.com'
+        ]);
+    }
+
+
+    /** @test * */
+    public function the_bio_field_is_required()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'bio' => '',
+            ]))->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['bio']);
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'fvasquez@local.com'
+        ]);
+    }
+
+    /** @test **/
+    public function the_twitter_field_is_optional()
+    {
+
     }
 }
