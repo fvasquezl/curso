@@ -79,7 +79,7 @@ class UpdateUsersTest extends TestCase
             'profession_id' => $newProfession->id,
         ]);
 
-        $this->assertDatabaseCount('user_skill',2);
+        $this->assertDatabaseCount('user_skill', 2);
         $this->assertDatabaseHas('user_skill', [
             'user_id' => $user->id,
             'skill_id' => $newSkill1->id
@@ -155,7 +155,7 @@ class UpdateUsersTest extends TestCase
         ]);
         $this->from(route('users.edit', $user))
             ->put(route('users.update', $user), $this->withData([
-                'email' =>'the-email-must-be-valid'
+                'email' => 'the-email-must-be-valid'
             ]))->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['email']);
         $this->assertDatabaseHas('users', [
@@ -175,7 +175,7 @@ class UpdateUsersTest extends TestCase
             'email' => 'other@local.com'
         ]);
         $this->from(route('users.edit', $user))
-            ->put(route('users.update', $user),$this->withData([
+            ->put(route('users.update', $user), $this->withData([
                 'email' => 'fvasquez@local.com',
             ]))->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['email']);
@@ -273,9 +273,120 @@ class UpdateUsersTest extends TestCase
         ]);
     }
 
-    /** @test **/
+    /** @test * */
     public function the_twitter_field_is_optional()
     {
+        $user = factory(User::class)->create();
 
+        factory(UserProfile::class)->create([
+            'twitter' => 'https://twitter.com/fvasquezl',
+            'user_id' => $user->id
+        ]);
+        $this->assertDatabaseHas('user_profiles', [
+            'twitter' => 'https://twitter.com/fvasquezl',
+            'user_id' => $user->id
+        ]);
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'twitter' => null,
+            ]))->assertRedirect(route('users.show', $user));
+
+        $this->assertDatabaseHas('user_profiles', [
+            'twitter' => null,
+            'user_id' => $user->id
+        ]);
     }
+
+    /** @test * */
+    public function the_twitter_field_needs_to_be_an_url()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+        factory(UserProfile::class)->create([
+            'twitter' => 'https://twitter.com/fvasquezl',
+            'user_id' => $user->id
+        ]);
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'twitter' => 'esta-es-una-cadena',
+            ]))->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['twitter']);
+    }
+
+    /** @test * */
+    public function the_twitter_field_need_to_exist()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+        factory(UserProfile::class)->create([
+            'twitter' => 'https://twitter.com/fvasquezl',
+            'user_id' => $user->id
+        ]);
+
+        $userUpdate = array_filter($this->withData([
+            'twitter' => null,
+        ]));
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user),$userUpdate)
+            ->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['twitter']);
+    }
+
+    /** @test * */
+    public function the_profession_id_field_is_optional()
+    {
+        $user = factory(User::class)->create();
+        $profession = factory(Profession::class)->create();
+
+        factory(UserProfile::class)->create([
+            'profession_id' => $profession->id,
+            'user_id' => $user->id
+        ]);
+        $this->assertDatabaseHas('user_profiles', [
+            'profession_id' => $profession->id,
+            'user_id' => $user->id
+        ]);
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'profession_id' => null,
+            ]))->assertRedirect(route('users.show', $user));
+
+        $this->assertDatabaseHas('user_profiles', [
+            'profession_id' => null,
+            'user_id' => $user->id
+        ]);
+    }
+
+
+    /** @test * */
+    public function the_profession_id_field_need_to_exist()
+    {
+        $this->handleValidationExceptions();
+        $user = factory(User::class)->create();
+        $profession = factory(Profession::class)->create();
+
+        factory(UserProfile::class)->create([
+            'profession_id' => $profession->id,
+            'user_id' => $user->id
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'profession_id' => $profession->id,
+            'user_id' => $user->id
+        ]);
+        $professionUpdate = array_filter($this->withData([
+            'profession_id' => null,
+        ]));
+
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user),$professionUpdate)
+            ->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['profession_id']);
+    }
+
 }
