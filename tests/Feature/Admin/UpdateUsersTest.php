@@ -6,6 +6,7 @@ use App\Models\Profession;
 use App\Models\Skill;
 use App\Models\UserProfile;
 use App\User;
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -387,6 +388,53 @@ class UpdateUsersTest extends TestCase
             ->put(route('users.update', $user),$professionUpdate)
             ->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['profession_id']);
+    }
+
+
+    /** @test * */
+    public function the_profession_id_field_must_be_exist_and_not_softDeleted_on_table()
+    {
+        $this->handleValidationExceptions();
+        $user = factory(User::class)->create();
+
+        $profession1 = factory(Profession::class)->create();
+        $profession2 = factory(Profession::class)->create([
+            'deleted_at' => Carbon::now(),
+        ]);
+
+        factory(UserProfile::class)->create([
+            'profession_id' => $profession1->id,
+            'user_id' => $user->id,
+        ]);
+
+        $professionUpdate = array_filter($this->withData([
+            'profession_id' => $profession2->id,
+        ]));
+
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user),$professionUpdate)
+            ->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['profession_id']);
+    }
+
+
+    /** @test * */
+    public function the_skills_options_must_be_exist_on_skills_table()
+    {
+        $this->handleValidationExceptions();
+        $skill1 = factory(Skill::class)->create();
+
+        $user = factory(User::class)->create();
+
+        $skillUpdate = array_filter($this->withData([
+            'skills' => [$skill1->id,3],
+        ]));
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user),$skillUpdate)
+            ->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['skills']);
     }
 
 }
