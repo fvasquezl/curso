@@ -6,13 +6,15 @@ use App\Models\Profession;
 use App\Models\Skill;
 use App\Models\UserProfile;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+    use SoftDeletes;
     use Notifiable;
 
-     protected $guarded=[];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -32,10 +34,6 @@ class User extends Authenticatable
         return static::where(compact('email'))->first();
     }
 
-    public function profession()
-    {
-        return $this->belongsTo(Profession::class);
-    }
 
     public function isAdmin()
     {
@@ -51,7 +49,7 @@ class User extends Authenticatable
 
     public function skills()
     {
-        return $this->belongsToMany(Skill::class,'user_skill');
+        return $this->belongsToMany(Skill::class, 'user_skill');
     }
 
     public function isAdmim()
