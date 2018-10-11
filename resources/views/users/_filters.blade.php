@@ -1,18 +1,17 @@
 <form method="get" action="{{url('usuarios')}}">
     <div class="row row-filters">
         <div class="col-12">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
-                <label class="form-check-label" for="inlineRadio1">Todos</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                <label class="form-check-label" for="inlineRadio2">Solo activos</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3">
-                <label class="form-check-label" for="inlineRadio3">Solo inactivos</label>
-            </div>
+            @foreach([''=>'Todos', 'with_team' => 'Con equipo', 'without_team'=> 'Sin equipo'] as $value => $text)
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input"
+                           type="radio"
+                           name="team"
+                           id="team_{{$value?:'all'}}"
+                           value="{{$value}}"
+                           {{$value === request('team','')? 'checked' : ''}}>
+                    <label class="form-check-label" for="team_{{$value?: 'all'}}">{{$text}}</label>
+                </div>
+            @endforeach
         </div>
     </div>
     <div class="row row-filters">
@@ -33,7 +32,8 @@
                 </div>
                 &nbsp;
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
                         Rol
                     </button>
                     <div class="dropdown-menu">
@@ -44,7 +44,8 @@
                 </div>
                 &nbsp;
                 <div class="btn-group drop-skills">
-                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
                         Habilidades
                     </button>
                     <div class="drop-menu skills-list">
@@ -77,15 +78,19 @@
             <div class="form-inline form-dates">
                 <label for="date_start" class="form-label-sm">Fecha</label>&nbsp;
                 <div class="input-group">
-                    <input type="text" class="form-control form-control-sm" name="date_start" id="date_start" placeholder="Desde">
+                    <input type="text" class="form-control form-control-sm" name="date_start" id="date_start"
+                           placeholder="Desde">
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-secondary btn-sm"><span class="oi oi-calendar"></span></button>
+                        <button type="button" class="btn btn-secondary btn-sm"><span class="oi oi-calendar"></span>
+                        </button>
                     </div>
                 </div>
                 <div class="input-group">
-                    <input type="text" class="form-control form-control-sm" name="date_start" id="date_start" placeholder="Hasta">
+                    <input type="text" class="form-control form-control-sm" name="date_start" id="date_start"
+                           placeholder="Hasta">
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-secondary btn-sm"><span class="oi oi-calendar"></span></button>
+                        <button type="button" class="btn btn-secondary btn-sm"><span class="oi oi-calendar"></span>
+                        </button>
                     </div>
                 </div>
                 &nbsp;
