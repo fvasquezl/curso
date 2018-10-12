@@ -21,9 +21,6 @@ class DeleteUsersTest extends TestCase
         $skill2 = factory(Skill::class)->create();
 
         $user = factory(User::class)->create();
-        factory(UserProfile::class)->create([
-            'user_id' => $user->id,
-        ]);
 
         $user->skills()->attach([$skill1->id,$skill2->id]);
 
@@ -57,9 +54,6 @@ class DeleteUsersTest extends TestCase
         $user = factory(User::class)->create([
             'deleted_at' => now()
         ]);
-        factory(UserProfile::class)->create([
-            'user_id' => $user->id,
-        ]);
 
         $user->skills()->attach([$skill1->id,$skill2->id]);
 
@@ -81,9 +75,6 @@ class DeleteUsersTest extends TestCase
         $user = factory(User::class)->create([
             'deleted_at' => null
         ]);
-        factory(UserProfile::class)->create([
-            'user_id' => $user->id,
-        ]);
 
         $user->skills()->attach([$skill1->id,$skill2->id]);
 
@@ -100,10 +91,6 @@ class DeleteUsersTest extends TestCase
     public function it_undelete_a_user_from_trash()
     {
         $user = factory(User::class)->create([
-            'deleted_at' => now()
-        ]);
-        factory(UserProfile::class)->create([
-            'user_id' => $user->id,
             'deleted_at' => now()
         ]);
 

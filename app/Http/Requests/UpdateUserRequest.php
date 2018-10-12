@@ -36,7 +36,7 @@ class UpdateUserRequest extends FormRequest
             'password' => '',
             'role' => [Rule::in(Role::getList())],
             'bio' => 'required',
-            'twitter' => ['nullable','present', 'url'],
+            'twitter' => ['nullable', 'present', 'url'],
             'profession_id' => [
                 'nullable', 'present',
                 Rule::exists('professions', 'id')
@@ -45,6 +45,9 @@ class UpdateUserRequest extends FormRequest
             'skills' => [
                 'array',
                 Rule::exists('skills', 'id'),
+            ],
+            'state' => [
+                Rule::in(['active', 'inactive'])
             ]
         ];
     }
@@ -55,6 +58,8 @@ class UpdateUserRequest extends FormRequest
         $user->fill([
             'name' => $this->name,
             'email' => $this->email,
+            'role' => $this->role,
+            'state' => $this->state
         ]);
 
         if ($this->password != null) {
@@ -70,6 +75,6 @@ class UpdateUserRequest extends FormRequest
             'profession_id' => $this->profession_id,
         ]);
 
-        $user->skills()->sync($this->skills ?:[]);
+        $user->skills()->sync($this->skills ?: []);
     }
 }

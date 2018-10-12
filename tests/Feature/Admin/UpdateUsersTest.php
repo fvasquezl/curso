@@ -20,7 +20,8 @@ class UpdateUsersTest extends TestCase
         'profession_id' => '',
         'bio' => 'Programador de laravel',
         'twitter' => 'https://twitter.com/fvasquezl',
-        'role' => 'user'
+        'role' => 'user',
+        'state' =>'active'
     ];
 
     /** @test */
@@ -63,7 +64,8 @@ class UpdateUsersTest extends TestCase
             'twitter' => 'https://twitter.com/fvasquezl',
             'role' => 'admin',
             'profession_id' => $newProfession->id,
-            'skills' => [$newSkill1->id, $newSkill2->id]
+            'skills' => [$newSkill1->id, $newSkill2->id],
+            'state' => 'inactive'
         ])->assertRedirect(route('users.show', $user));
 
         $this->assertCredentials([
@@ -71,6 +73,7 @@ class UpdateUsersTest extends TestCase
             'email' => 'fvasquez@local.com',
             'password' => 'secret',
             'role' => 'admin',
+            'active' => false
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
@@ -435,6 +438,43 @@ class UpdateUsersTest extends TestCase
             ->put(route('users.update', $user),$skillUpdate)
             ->assertRedirect(route('users.edit', $user))
             ->assertSessionHasErrors(['skills']);
+    }
+
+
+    /** @test * */
+    public function the_state_field_is_required()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'state' => '',
+            ]))->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['state']);
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'fvasquez@local.com'
+        ]);
+    }
+
+    /** @test * */
+    public function the_state_field_must_be_valid()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+
+        $this->from(route('users.edit', $user))
+            ->put(route('users.update', $user), $this->withData([
+                'state' => 'invalid',
+            ]))->assertRedirect(route('users.edit', $user))
+            ->assertSessionHasErrors(['state']);
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'fvasquez@local.com'
+        ]);
     }
 
 }

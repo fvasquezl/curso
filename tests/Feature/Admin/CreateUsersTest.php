@@ -20,7 +20,8 @@ class CreateUsersTest extends TestCase
         'bio' => 'Programador de laravel',
         'profession_id' => '',
         'twitter' => 'https://twitter.com/fvasquezl',
-        'role' => 'user'
+        'role' => 'user',
+        'state' => 'active'
     ];
 
     /** @test **/
@@ -43,7 +44,8 @@ class CreateUsersTest extends TestCase
             'name' => 'Faustino Vasquez',
             'email' => 'fvasquez@local.com',
             'password' =>'secret',
-            'role' => 'user'
+            'role' => 'user',
+            'active' => true
         ]);
 
         $user = User::findByEmail('fvasquez@local.com');
@@ -291,4 +293,30 @@ class CreateUsersTest extends TestCase
             ]))->assertSessionHasErrors(['skills']);
         $this->assertDatabaseEmpty('users');
     }
+
+    /** @test **/
+    public function the_state_field_must_be_valid()
+    {
+        $this->handleValidationExceptions();
+        $this->from(route('users.create'))
+            ->post(route('users.store'),$this->withData([
+                'state'=> 'invalid-state'
+            ]))->assertSessionHasErrors('state');
+
+        $this->assertDatabaseEmpty('users');
+    }
+
+    /** @test **/
+    public function the_state_field_is_reqired()
+    {
+        $this->handleValidationExceptions();
+        $this->from(route('users.create'))
+            ->post(route('users.store'),$this->withData([
+                'state'=> null
+            ]))->assertSessionHasErrors('state');
+
+        $this->assertDatabaseEmpty('users');
+    }
 }
+
+

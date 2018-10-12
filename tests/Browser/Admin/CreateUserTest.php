@@ -36,6 +36,7 @@ class CreateUserTest extends DuskTestCase
                 ->check("skills[{$skillA->id}]")
                 ->check("skills[{$skillB->id}]")
                 ->radio('role', 'user')
+                ->radio('state','active')
                 ->press('Crear usuario')
                 ->assertRouteIs('users.index')
                 ->assertSee('Faustino Vasquez')
@@ -46,7 +47,8 @@ class CreateUserTest extends DuskTestCase
             'name' => 'Faustino Vasquez',
             'email' => 'fvasquez@local.com',
             'password' =>'secret',
-            'role' => 'user'
+            'role' => 'user',
+            'active' => true
         ]);
 
         $user = User::findByEmail('fvasquez@local.com');

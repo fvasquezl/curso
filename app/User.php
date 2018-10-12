@@ -26,7 +26,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        //
+        'active' => 'bool',
     ];
 
     public static function findByEmail($email)
@@ -47,9 +47,7 @@ class User extends Authenticatable
 
     public function profile()
     {
-        return $this->hasOne(UserProfile::class)->withDefault([
-            'bio' => 'Programador'
-        ]);
+        return $this->hasOne(UserProfile::class)->withDefault();
     }
 
     public function skills()
@@ -62,24 +60,40 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    public function scopeSearch($query)
+
+    public function scopeSearch($query, $search)
     {
-        $query->when(request('team'),function($query,$team){
-        if($team === 'with_team'){
-            $query->has('team');
-        }elseif ($team === 'without_team'){
-            $query->doesntHave('team');
-        }
-        })
-        ->when(request('search'),function($query,$search){
-            $query->where(function($query) use ($search){
-                $query->where('name','like',"%{$search}%")
-                    ->orWhere('email','like',"%{$search}%")
-                    ->orWhereHas('team',function ($query) use ($search){
-                        $query->where('name','like',"%{$search}%");
-                    });
+        if (empty($search)) {
+            return;
+
+        };
+        $query->where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->orWhereHas('team', function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
             });
-        });
+    }
+
+    public function scopeByState($query, $state)
+    {
+        if ($state == 'active') {
+            return $query->where('active', true);
+        }
+        if ($state == 'inactive') {
+            return $query->where('active', false);
+        }
+    }
+
+    public function setStateAttribute($value)
+    {
+        $this->attributes['active'] = $value =='active';
+    }
+
+    public function getStateAttribute()
+    {
+        if($this->active !== null){
+            return $this->active ? 'active' : 'inactive';
+        }
     }
 
 }

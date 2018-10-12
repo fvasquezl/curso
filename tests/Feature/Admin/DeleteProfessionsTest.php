@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Profession;
 use App\Models\UserProfile;
+use App\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,7 +30,8 @@ class DeleteProfessionsTest extends TestCase
 
        $profession = factory(Profession::class)->create();
        $profile = factory(UserProfile::class)->create([
-           'profession_id' => $profession->id
+           'profession_id' => $profession->id,
+           'user_id'=> factory(User::class)->create()->id
        ]);
 
         $response = $this->delete(route('professions.destroy',$profession));
