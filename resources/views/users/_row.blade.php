@@ -2,8 +2,10 @@
     <td>{{ $user->id }}</td>
     <th scope="row">
         {{ $user->name }} {{ $user->status }}
+        @if($user->role != 'user')
+            ({{$user->role}})
+        @endif
         <span class="status st-{{$user->state}}"></span>
-
         <span class="note">{{ $user->team->name }}</span>
     </th>
     <td>{{ $user->email }}</td>
@@ -22,8 +24,10 @@
             <form action="{{ route('users.trash', $user) }}" method="POST">
                 @csrf
                 @method('PATCH')
-                <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary btn-sm"><span class="oi oi-eye"></span></a>
-                <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-secondary btn-sm"><span class="oi oi-pencil"></span></a>
+                <a href="{{ route('users.show', $user) }}" class="btn btn-outline-secondary btn-sm"><span
+                            class="oi oi-eye"></span></a>
+                <a href="{{ route('users.edit', $user) }}" class="btn btn-outline-secondary btn-sm"><span
+                            class="oi oi-pencil"></span></a>
                 <button type="submit" class="btn btn-outline-danger btn-sm"><span class="oi oi-trash"></span></button>
             </form>
         @endif

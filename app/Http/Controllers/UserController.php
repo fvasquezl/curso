@@ -7,15 +7,16 @@ use App\Models\Skill;
 use App\Http\Forms\UserForm;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Http\Request;
+
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $users = User::query()
             ->with('team','skills','profile.profession')
-            ->byState(request('state'))
-            ->search(request('search'))
+            ->filterBy($request->only(['state','role','search']))
             ->orderBy('created_at','DESC')
             ->paginate();
 
@@ -25,9 +26,8 @@ class UserController extends Controller
         return view('users.index', [
             'users'  => $users,
             'title'  => 'Listado de usuarios',
-            'roles'  => trans('users.filters.roles'),
+            'view' => 'index',
             'skills' => Skill::orderBy('name')->get(),
-            'states' => trans('users.filters.states'),
             'checkedSkills' => collect(request('skills')),
         ]);
     }
@@ -35,9 +35,10 @@ class UserController extends Controller
     public function trashed()
     {
         $users = User::onlyTrashed()->paginate();
-
-        $title = "Listado de usuarios en papelera";
-        return view('users.index', compact('users', 'title'));
+        return view('users.index',[
+            'users' =>$users,
+            'view' => 'trash',
+        ]);
     }
 
     public function show(User $user)

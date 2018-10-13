@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Models\Profession;
 use App\Models\Skill;
 use App\Models\UserProfile;
 use Illuminate\Notifications\Notifiable;
@@ -29,11 +28,17 @@ class User extends Authenticatable
         'active' => 'bool',
     ];
 
-    public static function findByEmail($email)
-    {
-        return static::where(compact('email'))->first();
-    }
 
+    /**
+     * Create a new Eloquent query builder for the model.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder|static
+     */
+    public function newEloquentBuilder($query)
+    {
+        return new UserQuery($query);
+    }
 
     public function isAdmin()
     {
@@ -60,30 +65,6 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-
-    public function scopeSearch($query, $search)
-    {
-        if (empty($search)) {
-            return;
-
-        };
-        $query->where('name', 'like', "%{$search}%")
-            ->orWhere('email', 'like', "%{$search}%")
-            ->orWhereHas('team', function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%");
-            });
-    }
-
-    public function scopeByState($query, $state)
-    {
-        if ($state == 'active') {
-            return $query->where('active', true);
-        }
-        if ($state == 'inactive') {
-            return $query->where('active', false);
-        }
-    }
-
     public function setStateAttribute($value)
     {
         $this->attributes['active'] = $value =='active';
@@ -95,5 +76,6 @@ class User extends Authenticatable
             return $this->active ? 'active' : 'inactive';
         }
     }
+
 
 }
